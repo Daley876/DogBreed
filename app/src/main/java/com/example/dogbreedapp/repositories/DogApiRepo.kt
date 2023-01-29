@@ -1,52 +1,32 @@
 package com.example.dogbreedapp.repositories
 
-import android.util.Log
-import com.example.dogbreedapp.models.DogBreedApi
-import com.example.dogbreedapp.models.DogsBreed
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.dogbreedapp.network.NetworkConnection
+import com.example.dogbreedapp.models.DogsBreedModel
 
 class DogApiRepo {
-    private val client = DogBreedApi
+    private val client = NetworkConnection
 
-     fun getDogsByBreed(breed: String): DogsBreed {
-        var data = DogsBreed("", listOf(""))
-        val response = client.instance.retrieveDogsByBreed(breed)
+     /*fun getDogsByBreed(breed: String): DogsBreedResponse {
+        var data = DogsBreedResponse("", listOf(""))
+        val response = client.apiClient.getDogsByBreed(breed)
 
-        response.enqueue(object : Callback<DogsBreed> {
-            override fun onResponse(call: Call<DogsBreed?>, response: Response<DogsBreed>) {
+        response.enqueue(object : Callback<DogsBreedResponse> {
+            override fun onResponse(call: Call<DogsBreedResponse?>, response: Response<DogsBreedResponse>) {
                 data = response.body()!!
             }
 
-            override fun onFailure(call: Call<DogsBreed>, t: Throwable) {
+            override fun onFailure(call: Call<DogsBreedResponse>, t: Throwable) {
                 Log.d("ERROR_LOG", t.toString())
+                println("========ENQUEUE WAS BAD=========")
             }
         })
 
         return data
-    }
+    }*/
 
-    suspend fun getDogsApiCall(breed: String) : DogsBreed{
-        var output = DogsBreed("", listOf(""))
-        try {
-            CoroutineScope(Dispatchers.IO).launch {
-                val response =  async {
-                    getDogsByBreed(breed)
-                }.await()
-                if(response.status.equals("success")) {
-                    println("=====API CALL WAS GOOD=====")
-                output = response
-                }
-                else {println("=====API CALL WAS BAD======")}
-            }
-        } catch (e: Exception){
-            println(e.toString())
-        }
-        return output
+     suspend fun getDogsByBreed(breedName: String): DogsBreedModel?{
+         val request = client.apiClient.getDogsByBreed(breedName)
+
+         return if (request.isSuccessful) request.body()!! else null
     }
 }

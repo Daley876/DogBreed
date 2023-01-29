@@ -51,10 +51,9 @@ class MainActivity : AppCompatActivity() {
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[HomeScreenViewModel::class.java]
     }
-
     private fun initObservers(){
         viewModel.dogBreedLiveData.observe(this) {
-            dogsList = it.message
+            dogsList = it?.message!!
         }
     }
     @Composable
@@ -78,13 +77,14 @@ class MainActivity : AppCompatActivity() {
                     onValueChange = { input.value = it },
                     label = { Text(text = "Dog Breed") },
                     modifier = Modifier
-                        .size(190.dp, 35.dp)
+                        .width(190.dp)
+                        .wrapContentHeight()
                         .border(border = BorderStroke(2.dp, colorResource(id = R.color.black)))
                 )
 
                 Button(
                     onClick = {
-                        viewModel.getDogs(input.value.lowercase(Locale.getDefault()))
+                        viewModel.getDogsByBreed(input.value.lowercase(Locale.getDefault()))
                     },
                     modifier = Modifier
                         .wrapContentSize()
