@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import coil.compose.AsyncImage
 import java.util.Locale
 
@@ -73,11 +74,12 @@ class MainActivity : AppCompatActivity() {
                 val input = remember { mutableStateOf("") }
                 TextField(
                     value = input.value,
+                    textStyle = TextStyle.Default.copy(fontSize = 28.sp),
                     singleLine = true,
                     onValueChange = { input.value = it },
-                    label = { Text(text = "Dog Breed") },
+                    label = { Text(text = "Dog Breed", fontSize = 16.sp) },
                     modifier = Modifier
-                        .width(190.dp)
+                        .width(240.dp)
                         .wrapContentHeight()
                         .border(border = BorderStroke(2.dp, colorResource(id = R.color.black)))
                 )
