@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 interface DogBreedApiService {
 
-   @GET("{breed}/images")//this represents end points of url for the specific call
+   @GET("{breed}/images")
    suspend fun retrieveDogsByBreed(
       @Path("breed") breed: String
    ): Response<DogsBreedModel>
