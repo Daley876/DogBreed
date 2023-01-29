@@ -78,7 +78,8 @@ class MainActivity : AppCompatActivity() {
 
                 Button(
                     onClick = {
-                        viewModel.getDogsByBreed(input.value.lowercase(Locale.getDefault()).trim())
+                        val searchedTerm = input.value.lowercase(Locale.getDefault()).trim()
+                        viewModel.getDogsByBreed(searchedTerm)
                     },
                     modifier = Modifier
                         .wrapContentSize()
@@ -96,26 +97,44 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Composable
+    fun ShowErrorMessage() {
+        Row(horizontalArrangement = Arrangement.Center) {
+            Text(modifier = Modifier.padding(13.dp),
+                text = "NO RESULTS FOUND MATCHING THAT BREED",
+                fontSize = 40.sp,
+                textAlign = TextAlign.Center,
+                color = colorResource(id = R.color.red),
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.SansSerif
+            )
+        }
+    }
+
+    @Composable
     fun ImageList(){
         val dogsList = viewModel.dogBreedStateData.value //value changes after each call
-        LazyColumn(modifier = Modifier.padding(top = 15.dp, start = 12.dp))
-        {
 
-            items(dogsList.message) { dogImgUrl ->
-                Card (elevation = 6.dp,
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .clip(CircleShape)
-                        .wrapContentSize()) {
-                    Row {
-                        AsyncImage(
-                            model = dogImgUrl,
-                            contentScale = ContentScale.Fit,
-                            contentDescription = null
-                        )
+        if(dogsList.message.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.padding(top = 15.dp, start = 12.dp))
+            {
+                items(dogsList.message) { dogImgUrl ->
+                    Card (elevation = 6.dp,
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .clip(CircleShape)
+                            .wrapContentSize()) {
+                        Row {
+                            AsyncImage(
+                                model = dogImgUrl,
+                                contentScale = ContentScale.Fit,
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
             }
+        } else {
+            ShowErrorMessage()
         }
     }
 
