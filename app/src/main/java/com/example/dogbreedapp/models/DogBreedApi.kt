@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object DogBreedApi {
-    const val BASE_URL = "https://dog.ceo/api/"
+    const val BASE_URL = "https://dog.ceo/api/breed/"
 
     val instance by lazy {
         val retrofit =  Retrofit.Builder()
@@ -16,6 +16,5 @@ object DogBreedApi {
 
         retrofit.create(DogApiCalls::class.java)
     }
-
 
 }
