@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -25,22 +23,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import com.example.dogbreedapp.R
 import com.example.dogbreedapp.viewmodels.HomeScreenViewModel
-import androidx.compose.material.TextField
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import coil.compose.AsyncImage
 import java.util.Locale
 
-var dogsList = emptyList<String>()
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: HomeScreenViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         initViewModel()
-        initObservers()
+
         setContent {
             MainScreen()
         }
@@ -52,39 +49,36 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[HomeScreenViewModel::class.java]
     }
 
-    private fun initObservers(){
-        viewModel.dogBreedLiveData.observe(this) {
-            dogsList = it.message
-        }
-    }
     @Composable
     fun MainScreen() {
         Column {
             Banner()
-            UserInteractions()
+            InputRow()
+            ImageList()
 
         }
     }
 
     @Composable
-    fun UserInteractions() {
-
+    fun InputRow() {
         Column {
             Row(modifier = Modifier.padding(top = 15.dp, start = 12.dp)) {
                 val input = remember { mutableStateOf("") }
                 TextField(
                     value = input.value,
+                    textStyle = TextStyle.Default.copy(fontSize = 28.sp),
                     singleLine = true,
                     onValueChange = { input.value = it },
-                    label = { Text(text = "Dog Breed") },
+                    label = { Text(text = "Dog Breed", fontSize = 16.sp) },
                     modifier = Modifier
-                        .size(190.dp, 35.dp)
+                        .width(240.dp)
+                        .wrapContentHeight()
                         .border(border = BorderStroke(2.dp, colorResource(id = R.color.black)))
                 )
 
                 Button(
                     onClick = {
-                        viewModel.getDogs(input.value.lowercase(Locale.getDefault()))
+                        viewModel.getDogsByBreed(input.value.lowercase(Locale.getDefault()).trim())
                     },
                     modifier = Modifier
                         .wrapContentSize()
@@ -98,20 +92,31 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            LazyColumn(modifier = Modifier.padding(top = 15.dp, start = 12.dp))
-            {
-                items(dogsList) { dogImgUrl ->
-                    AsyncImage(
-                        modifier = Modifier.clip(CircleShape),
-                        model = dogImgUrl,
-                        contentScale = ContentScale.Fit,
-                        contentDescription = null
-                    )
+        }
+    }
+
+    @Composable
+    fun ImageList(){
+        val dogsList = viewModel.dogBreedStateData.value //value changes after each call
+        LazyColumn(modifier = Modifier.padding(top = 15.dp, start = 12.dp))
+        {
+
+            items(dogsList.message) { dogImgUrl ->
+                Card (elevation = 6.dp,
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .clip(CircleShape)
+                        .wrapContentSize()) {
+                    Row {
+                        AsyncImage(
+                            model = dogImgUrl,
+                            contentScale = ContentScale.Fit,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
-
         }
-
     }
 
     @Composable
