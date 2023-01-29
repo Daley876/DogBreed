@@ -1,7 +1,7 @@
 package com.example.dogbreedapp.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dogbreedapp.models.DogsBreedModel
@@ -11,13 +11,16 @@ import kotlinx.coroutines.*
 class HomeScreenViewModel : ViewModel() {
     private val repository = DogApiRepo()
 
-    private val dogBreedMutableLiveDataFromCall = MutableLiveData<DogsBreedModel?>()
-    val dogBreedLiveData : LiveData<DogsBreedModel?> = dogBreedMutableLiveDataFromCall
+     val dogBreedStateData : MutableState<DogsBreedModel> =
+         mutableStateOf(DogsBreedModel("",listOf(""))) //this replaces LiveData
+
 
      fun getDogsByBreed (breed : String){
         viewModelScope.launch(Dispatchers.IO){
             val response = repository.getDogsByBreed(breed)
-            dogBreedMutableLiveDataFromCall.postValue(response)
+            if (response != null) {
+                dogBreedStateData.value = response
+            }
         }
     }
 
