@@ -1,166 +1,21 @@
 package com.example.dogbreedapp.activities
 
 import android.os.Bundle
-import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelProvider
 import com.example.dogbreedapp.R
-import com.example.dogbreedapp.viewmodels.HomeScreenViewModel
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
-import coil.compose.AsyncImage
-import java.util.Locale
+import com.example.dogbreedapp.fragments.MainViewFragment
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: HomeScreenViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        initViewModel()
+        setContentView(R.layout.main_layout)
 
-        setContent {
-            MainScreen()
-        }
-
+        supportFragmentManager.beginTransaction()
+            .add(R.id.main_content,MainViewFragment())
+            .commit()
 
     }
 
-    private fun initViewModel() {
-        viewModel = ViewModelProvider(this)[HomeScreenViewModel::class.java]
-    }
 
-    @Composable
-    fun MainScreen() {
-        Column {
-            Banner()
-            InputRow()
-            ImageList()
-
-        }
-    }
-
-    @Composable
-    fun InputRow() {
-        Column {
-            Row(modifier = Modifier.padding(top = 15.dp, start = 12.dp)) {
-                val input = remember { mutableStateOf("") }
-                TextField(
-                    value = input.value,
-                    textStyle = TextStyle.Default.copy(fontSize = 28.sp),
-                    singleLine = true,
-                    onValueChange = { input.value = it },
-                    label = { Text(text = "Dog Breed", fontSize = 16.sp) },
-                    modifier = Modifier
-                        .width(240.dp)
-                        .wrapContentHeight()
-                        .border(border = BorderStroke(2.dp, colorResource(id = R.color.black)))
-                )
-
-                Button(
-                    onClick = {
-                        val searchedTerm = input.value.lowercase(Locale.getDefault()).trim()
-                        viewModel.getDogsByBreed(searchedTerm)
-                    },
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(start = 40.dp)
-                ) {
-                    Text(
-                        text = "Fetch!",
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-        }
-    }
-
-    @Composable
-    fun ShowErrorMessage() {
-        Row(horizontalArrangement = Arrangement.Center) {
-            Text(modifier = Modifier.padding(13.dp),
-                text = "NO RESULTS FOUND MATCHING THAT BREED",
-                fontSize = 40.sp,
-                textAlign = TextAlign.Center,
-                color = colorResource(id = R.color.red),
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
-            )
-        }
-    }
-
-    @Composable
-    fun ImageList(){
-        val dogsList = viewModel.dogBreedStateData.value //value changes after each call
-
-        if(dogsList.message.isNotEmpty()) {
-            LazyColumn(modifier = Modifier.padding(top = 15.dp, start = 12.dp))
-            {
-                items(dogsList.message) { dogImgUrl ->
-                    Card (elevation = 6.dp,
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .clip(CircleShape)
-                            .wrapContentSize()) {
-                        Row {
-                            AsyncImage(
-                                model = dogImgUrl,
-                                contentScale = ContentScale.Fit,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                }
-            }
-        } else {
-            ShowErrorMessage()
-        }
-    }
-
-    @Composable
-    fun Banner() {
-        Column(modifier = Modifier.padding(top = 20.dp)) {
-            Text(
-                text = "Dog Breed Finder",
-                fontSize = 32.sp,
-                fontFamily = FontFamily.Monospace,
-                textAlign = TextAlign.Center,
-                color = colorResource(id = R.color.white),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .background(color = colorResource(id = R.color.purple_500))
-                    .fillMaxWidth()
-                    .padding(top = 10.dp, bottom = 10.dp)
-            )
-        }
-    }
-
-    @Preview
-    @Composable
-    fun BasePreview() {
-        Surface {
-            MainScreen()
-        }
-    }
 }
