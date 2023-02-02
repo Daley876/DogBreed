@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 class HomeScreenViewModel : ViewModel() {
     private val repository = DogApiRepo()
 
-     val dogBreedStateData : MutableState<DogsBreedModel> = mutableStateOf(DogsBreedModel("",listOf("")))
+    private val dogBreedStateData : MutableState<DogsBreedModel> = mutableStateOf(DogsBreedModel("",listOf("")))
 
      fun getDogsByBreed (breed : String){
         viewModelScope.launch(Dispatchers.IO){
@@ -20,6 +20,10 @@ class HomeScreenViewModel : ViewModel() {
                 dogBreedStateData.value = response
             }
         }
+    }
+
+    fun getDogBreedStateData() : DogsBreedModel {
+        return dogBreedStateData.value
     }
 
 }

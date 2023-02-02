@@ -153,7 +153,7 @@ class MainViewFragment : Fragment() {
 
     @Composable
     fun ImageList() {
-        val dogsList = viewModel.dogBreedStateData.value //value changes after each call
+        val dogsList = viewModel.getDogBreedStateData() //value changes after each call
 
         if (dogsList.message.isNotEmpty()) {
             LazyColumn(
